@@ -1,6 +1,12 @@
 # MediTrack — Hospital Operations Intelligence
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://meditrack-hospital-analytics-dav.streamlit.app/)
+
 A data analytics, visualization, and predictive modeling mini-project built with **Python, Streamlit, Pandas, NumPy, Plotly, and Scikit-learn**.
+
+**🚀 Live Application URL**: [https://meditrack-hospital-analytics-dav.streamlit.app/](https://meditrack-hospital-analytics-dav.streamlit.app/)
+
+---
 
 ## 1. Project Overview
 
@@ -89,7 +95,13 @@ The application preserves a 5-step intuitive navigation structure:
 
 ---
 
-## 7. How to Run Locally
+## 7. Live Demo & Local Execution
+
+### 🚀 Live Web Deployment
+The application is deployed live on Streamlit Community Cloud:  
+👉 **[https://meditrack-hospital-analytics-dav.streamlit.app/](https://meditrack-hospital-analytics-dav.streamlit.app/)**
+
+### 💻 Run Locally
 
 1. **Install Dependencies**:
    ```bash
