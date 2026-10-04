@@ -1,98 +1,102 @@
-# Orbital Engine — Data Analytics & Visualization
+# MediTrack — Hospital Operations Intelligence
 
-A small data analytics mini-project built with **Python, Streamlit, Pandas, Plotly, and Scikit-learn**.
+A data analytics, visualization, and predictive modeling mini-project built with **Python, Streamlit, Pandas, NumPy, Plotly, and Scikit-learn**.
 
-## 1. Dataset
+## 1. Project Overview
 
-The project uses a reproducible **synthetic space-mission dataset with 10,000 records**. The domain is space-mission planning and cost analysis.
+**MediTrack** is an academic hospital operations analytics application designed to optimize hospital patient stay management, evaluate operational resource utilization, and predict patient **length of stay (in days)** using machine learning regression models.
 
-The dataset contains:
-- Agency type
-- Payload mass
-- Orbit altitude
-- Mission budget
-- Fuel efficiency score
-- Risk mitigation index
-- Testing hours
-- Crewed status
-- Launch-window alignment
-- Final mission cost
-- Mission status
+---
 
-The data is generated with a fixed seed, so the same dataset can be recreated every time the app runs.
+## 2. Synthetic Dataset (10,000 Records)
 
-## 2. Data Cleaning
+The project utilizes a reproducible synthetic hospital operations dataset containing **10,000 records**.
 
-The raw dataset intentionally contains missing values so the preprocessing step can be demonstrated.
+The dataset features:
+- **Patient Information**: `patient_id`, `age`, `gender`, `blood_type`, `medical_condition`
+- **Admission Information**: `admission_type`, `admission_date`, `discharge_date`, `department`, `hospital`, `doctor`, `insurance_provider`
+- **Treatment Information**: `medication`, `test_result`, `previous_visits`
+- **Financial Information**: `billing_amount`
+- **Operational Target**: `length_of_stay`
 
-### Missing values
+The dataset is generated using a fixed random seed (`RANDOM_STATE = 42`), ensuring 100% reproducibility every time the application is run.
 
-| Column | Missing values | Cleaning method |
-| --- | ---: | --- |
-| fuel_efficiency_score | 300 | Filled with the median of the available values |
-| window_alignment_pct | 200 | Filled with the median of the available values |
+---
 
-So, **500 missing cells** are handled without deleting those rows.
+## 3. Data Cleaning & Preprocessing
 
-The complete dataset is also checked for duplicate rows. No duplicate rows were found, so no valid records were removed.
+The raw dataset intentionally contains missing values and duplicate records to demonstrate an end-to-end data cleaning workflow:
 
-### Model preprocessing
+### Missing Value Handling
+- **Numeric Features** (`age`, `billing_amount`): Imputed using **median** values.
+- **Categorical Features** (`gender`, `medical_condition`, `insurance_provider`, `test_result`): Imputed using **mode (most frequent)** values.
 
-Before training:
-- Numeric features are median-imputed and standardized.
-- Categorical features are filled with the most frequent value.
-- Categorical values are converted using one-hot encoding.
-- The same preprocessing pipeline is used for both models.
+### Duplicate Detection & Trimming
+- Duplicate records are identified and removed.
+- Downsampled to ensure the final analytical dataset contains **exactly 10,000 valid records**.
 
-## 3. Exploratory Data Analysis
+### Feature Engineering
+- `length_of_stay`: Computed from discharge and admission dates `(discharge_date - admission_date).dt.days`.
+- `admission_month` & `admission_weekday`: Extracted temporal features for seasonal volume analysis.
+- `age_group`: Categorized into demographic groups (`0-18`, `19-35`, `36-50`, `51-65`, `65+`).
 
-After cleaning, the app shows:
-- Final mission cost distribution
-- Mission outcome distribution
-- Budget vs final mission cost
-- Average mission cost by agency
-- Numeric correlation matrix
+---
 
-This helps identify patterns and relationships before model training.
+## 4. Exploratory Data Analysis (EDA)
 
-## 4. Machine Learning Models
+The application provides interactive Plotly visualizations across 10 analytical perspectives:
+1. **Patient Age Distribution** (Histogram & box plot)
+2. **Medical Condition Distribution** (Bar chart)
+3. **Admission Type Mix** (Emergency / Urgent / Elective donut chart)
+4. **Department Workload** (Bar chart)
+5. **Average Length of Stay by Medical Condition** (Bar chart)
+6. **Billing Amount Distribution** (Histogram)
+7. **Length of Stay vs. Billing Amount** (Scatter plot colored by urgency)
+8. **Monthly Admissions Trend** (Line chart)
+9. **Hospital-wise Patient Volume** (Stacked bar chart)
+10. **Numeric Feature Correlation Matrix** (Heatmap)
 
-The project predicts **final mission cost** using two regression models:
+---
 
+## 5. Machine Learning Models
+
+Predicts **hospital length of stay (days)** as a regression task.
+
+### Feature Pipeline (No Target Leakage)
+- **Numeric Features** (`age`, `previous_visits`, `billing_amount`): Median Imputer + StandardScaler
+- **Categorical Features** (`gender`, `medical_condition`, `admission_type`, `department`, `hospital`, `insurance_provider`, `test_result`): Mode Imputer + OneHotEncoder
+- Combined using Scikit-Learn `ColumnTransformer`.
+
+### Evaluated Regression Models
 1. **Linear Regression**
 2. **Random Forest Regressor**
 
-Both models use the same **80/20 train-test split** and the same preprocessing pipeline.
+Both models are evaluated on an **80/20 train/test split** (`random_state = 42`) using:
+- **MAE** (Mean Absolute Error)
+- **RMSE** (Root Mean Squared Error)
+- **R² Score** (Coefficient of Determination)
 
-### Model performance
+---
 
-| Model | MAE | RMSE | R² |
-| --- | ---: | ---: | ---: |
-| Linear Regression | 10.96 | 13.91 | 0.976 |
-| Random Forest | 14.25 | 17.77 | 0.961 |
+## 6. Streamlit Web Application Workflow
 
-### Which model is better?
+The application preserves a 5-step intuitive navigation structure:
+1. **1 · Actual Dataset**: Raw dataset preview, shape metrics, and column guide.
+2. **2 · Data Cleaning**: Missing value summary, duplicate removal audit, and clean preview.
+3. **3 · Exploratory Analysis**: KPI cards and 10 interactive Plotly charts with operational insights.
+4. **4 · Model Comparison**: Validation scorecard and bar chart comparing MAE, RMSE, and R² scores.
+5. **5 · Predict Performance**: Interactive patient profile input form with real-time length-of-stay predictions and operational discharge recommendations.
 
-**Linear Regression is the better model for this dataset.**
+---
 
-The reason is:
+## 7. How to Run Locally
 
-- Lower MAE: **10.96** vs **14.25**
-- Lower RMSE: **13.91** vs **17.77**
-- Higher R²: **0.976** vs **0.961**
+1. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-MAE and RMSE measure prediction error, so lower is better. R² measures how much variation in the target is explained by the model, so higher is better.
-
-The synthetic final-cost target was created mainly from additive relationships between the input variables. Because of that, Linear Regression fits the underlying pattern better than the Random Forest in this project.
-
-## 5. Web Application Flow
-
-The Streamlit app is intentionally arranged in the same order as the mini-project workflow:
-
-1. **Actual Dataset** — view the raw records before cleaning.
-2. **Data Cleaning** — see missing values, cleaning operations, and the cleaned dataset.
-3. **Exploratory Analysis** — understand distributions and relationships.
-4. **Model Comparison** — compare both ML models using MAE, RMSE, and R².
-5. **Predict Performance** — enter a new mission profile and get cost predictions from both models.
-
-No login or authentication is required.
+2. **Run Streamlit Application**:
+   ```bash
+   python -m streamlit run app.py
+   ```
